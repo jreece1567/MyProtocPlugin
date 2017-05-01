@@ -31,8 +31,8 @@ When the **runprotoc.sh** script is executed, it will run protoc, which will inv
 ## Prerequisites
 The **protoc** compiler must be installed and available on your **PATH**
 
-Download the protoc binary, if necessary:
-See the <a href="https://github.com/google/protobuf/releases">Protobuf Releases</a> page.
+Download the protoc binary, if necessary:  
+See the <a href="https://github.com/google/protobuf/releases">Protobuf Releases</a> page.  
 The protoc version used in this demo can be <a href="https://github.com/google/protobuf/releases/download/v3.2.0/protoc-3.2.0-osx-x86_64.zip">downloaded here</a>.
 
 ## Frameworks
