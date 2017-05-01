@@ -146,12 +146,31 @@ public class Main {
 					for (final FieldDescriptorProto property : propertyList) {
 						final JsonObject field = new JsonObject();
 						field.add("name", new JsonPrimitive(property.getName()));
-						if (property.hasTypeName()) {
-							field.add("type",
-									new JsonPrimitive(property.getTypeName()));
+						if ("LABEL_REPEATED".equals(property.getLabel()
+								.toString())) {
+
+							field.add("type", new JsonPrimitive("array"));
+							final JsonObject items = new JsonObject();
+							if (property.hasTypeName()) {
+								items.add(
+										"type",
+										new JsonPrimitive(property
+												.getTypeName()));
+							} else {
+								items.add("type", new JsonPrimitive(property
+										.getType().name()));
+							}
+							field.add("items", items);
 						} else {
-							field.add("type", new JsonPrimitive(property
-									.getType().name()));
+							if (property.hasTypeName()) {
+								field.add(
+										"type",
+										new JsonPrimitive(property
+												.getTypeName()));
+							} else {
+								field.add("type", new JsonPrimitive(property
+										.getType().name()));
+							}
 						}
 						properties.add(field);
 					}
