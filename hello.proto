@@ -9,6 +9,21 @@ enum Greeting {
     MISS = 3;
 }
 
+message TestOne {
+  string id = 1;
+}
+
+message TestTwo {
+  int32 value = 1;
+}
+
+message TestOneOf {
+   oneof test_data {
+      TestOne one = 1;
+      TestTwo two = 2;
+    }
+}
+
 message Hello {
     Greeting greeting = 1;
     string name = 2;
@@ -24,4 +39,5 @@ message Hello {
       PhoneType type = 2;
     }
     PhoneNumber phone = 5;
+    TestOneOf tester = 6;
 }
