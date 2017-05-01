@@ -207,6 +207,7 @@ public class Main {
         for (final FileDescriptorProto fdp : request.getProtoFileList()) {
             // generate something from the .proto file, add that to the
             // response-builder
+            System.err.println("Processing: " + fdp.getName());
             processFile(fdp, responseBuilder);
         }
 
