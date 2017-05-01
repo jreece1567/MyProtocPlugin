@@ -1,0 +1,11 @@
+# Ignore build results
+target
+
+# Ignore Eclipse artifacts
+.classpath
+.project
+.settings
+
+# Ignore Operating System artifacts
+.DS_Store
+
