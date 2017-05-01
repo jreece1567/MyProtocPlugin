@@ -1,5 +1,7 @@
 # Ignore build results
 target
+output
+github.com
 
 # Ignore Eclipse artifacts
 .classpath
