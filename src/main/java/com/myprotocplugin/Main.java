@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,8 @@ import com.google.protobuf.DescriptorProtos.EnumDescriptorProto;
 import com.google.protobuf.DescriptorProtos.EnumValueDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
+import com.google.protobuf.DescriptorProtos.MethodDescriptorProto;
+import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.compiler.PluginProtos;
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest;
@@ -40,6 +43,76 @@ public class Main {
     // a map of package-name-->list-of-descriptors (which can be enums or
     // messages)
     private static final HashMap<String, List<GeneratedMessageV3>> entities = new HashMap<String, List<GeneratedMessageV3>>();
+
+    private static final HashMap<String, List<EnumDescriptorProto>> _enums = new HashMap<String, List<EnumDescriptorProto>>();
+    private static final HashMap<String, List<DescriptorProto>> _messages = new HashMap<String, List<DescriptorProto>>();
+
+    private static final JsonObject swaggerDoc = new JsonObject();
+
+    private static void buildSwaggerSkeleton(final String serviceName) {
+
+        // final JsonObject swaggerDoc = new JsonObject();
+
+        swaggerDoc.add("swagger", new JsonPrimitive("2.0"));
+
+        final JsonObject info = new JsonObject();
+        info.add("title", new JsonPrimitive(serviceName));
+        info.add("version", new JsonPrimitive("1.0"));
+        info.add("description", new JsonPrimitive(""));
+        info.add("x-last-modified-at", new JsonPrimitive(""));
+        final JsonObject license = new JsonObject();
+        license.add("name", new JsonPrimitive("Apache 2 License"));
+        license.add("url", new JsonPrimitive(
+                "http://www.apache.org/licenses/LICENSE-2.0"));
+        info.add("license", license);
+        final JsonObject contact = new JsonObject();
+        contact.add("name", new JsonPrimitive("Westfield Support"));
+        contact.add("url", new JsonPrimitive("http://www.westfieldstatus.com"));
+        contact.add("email", new JsonPrimitive("help@westfieldsupport.com"));
+        info.add("contact", contact);
+        swaggerDoc.add("info", info);
+
+        final JsonArray tags = new JsonArray();
+        final JsonObject tag = new JsonObject();
+        tag.add("name", new JsonPrimitive(""));
+        swaggerDoc.add("tags", tags);
+
+        final JsonArray schemes = new JsonArray();
+        schemes.add(new JsonPrimitive("http"));
+        schemes.add(new JsonPrimitive("https"));
+        swaggerDoc.add("schemes", schemes);
+
+        swaggerDoc.add("basePath", new JsonPrimitive("/"));
+
+        final JsonArray consumes = new JsonArray();
+        consumes.add(new JsonPrimitive("application/json"));
+        swaggerDoc.add("consumes", consumes);
+
+        final JsonArray produces = new JsonArray();
+        produces.add(new JsonPrimitive("application/json"));
+        swaggerDoc.add("produces", produces);
+
+        final JsonObject securityDefinitions = new JsonObject();
+        final JsonObject apiKey = new JsonObject();
+        apiKey.add("description", new JsonPrimitive("A Westfield API-key."));
+        apiKey.add("type", new JsonPrimitive("apiKey"));
+        apiKey.add("name", new JsonPrimitive("api_key"));
+        apiKey.add("in", new JsonPrimitive("query"));
+        securityDefinitions.add("api_key", apiKey);
+        swaggerDoc.add("securityDefinitions", securityDefinitions);
+
+        final JsonArray access = new JsonArray();
+        access.add(new JsonPrimitive(""));
+        swaggerDoc.add("x-service-access", access);
+
+        final JsonObject definitions = new JsonObject();
+        swaggerDoc.add("definitions", definitions);
+
+        final JsonObject paths = new JsonObject();
+        swaggerDoc.add("paths", paths);
+
+        System.err.println(gson.toJson(swaggerDoc));
+    }
 
     /**
      * Recursively traverse the AST and build a dictionary
@@ -65,6 +138,18 @@ public class Main {
         if (descriptors != null) {
             entities.get(packageName).addAll(descriptors);
         }
+        if (_enums.get(packageName) == null) {
+            _enums.put(packageName, new ArrayList<EnumDescriptorProto>());
+        }
+        if (enums != null) {
+            _enums.get(packageName).addAll(enums);
+        }
+        if (_messages.get(packageName) == null) {
+            _messages.put(packageName, new ArrayList<DescriptorProto>());
+        }
+        if (descriptors != null) {
+            _messages.get(packageName).addAll(descriptors);
+        }
 
         // loop through the descriptors, recurse to find nested enums and
         // messages
@@ -80,37 +165,39 @@ public class Main {
         }
     }
 
+    private static void processServices(final FileDescriptorProto fdp) {
+
+        final List<ServiceDescriptorProto> services = fdp.getServiceList();
+
+        for (final ServiceDescriptorProto service : services) {
+            final String serviceName = service.getName();
+            System.err.println("Service:" + serviceName);
+            final List<MethodDescriptorProto> methods = service.getMethodList();
+            for (final MethodDescriptorProto method : methods) {
+                final String methodName = method.getName();
+                final String inParam = method.getInputType();
+                final String outParam = method.getOutputType();
+                System.err.println("Method: " + methodName + "(" + inParam
+                        + ") returns " + outParam);
+            }
+        }
+    }
+
     /**
-     * Process a single file in the .proto file list supplied by protoc, write
-     * whatever we've generated to the response-builder.
+     * Generate the Meta-JSON
      *
-     * @param fdp
-     *            the .proto file descriptor, as supplied by the protoc compiler
-     * @param responseBuilder
-     *            the buider to contain the response
+     * @param name
+     *            the service name
+     * @return an array of meta JSON
      */
-    private static final void processFile(final FileDescriptorProto fdp,
-            final Builder responseBuilder) {
-
-        // get top-level enums and messages
-        final List<EnumDescriptorProto> enums = fdp.getEnumTypeList();
-        final List<DescriptorProto> messages = fdp.getMessageTypeList();
-
-        // set up a map to record the AST
-        entities.clear();
-        entities.put(fdp.getPackage(), new ArrayList<GeneratedMessageV3>());
-
-        // get enums and messages nested inside of top-level messages
-        traverseAST(fdp.getPackage(), enums, messages);
-
-        // the JSON structure we will fill in and write to the response-builder
+    private static final JsonArray generateMeta(final String name) {
         final JsonArray jsonArray = new JsonArray();
 
         // loop through the dictionary we've built from the AST
         final Iterator<String> itPackages = entities.keySet().iterator();
         while (itPackages.hasNext()) {
-            final List<GeneratedMessageV3> descriptors = entities
-                    .get(itPackages.next());
+            final String pkgName = itPackages.next();
+            final List<GeneratedMessageV3> descriptors = entities.get(pkgName);
             for (final GeneratedMessageV3 descriptor : descriptors) {
                 // process enums
                 if (descriptor instanceof EnumDescriptorProto) {
@@ -118,8 +205,8 @@ public class Main {
                     json.add("name", new JsonPrimitive(
                             ((EnumDescriptorProto) descriptor).getName()));
                     json.add("type", new JsonPrimitive("Enum"));
-                    json.add("filename", new JsonPrimitive(fdp.getName()));
-                    json.add("package", new JsonPrimitive(fdp.getPackage()));
+                    json.add("filename", new JsonPrimitive(name));
+                    json.add("package", new JsonPrimitive(pkgName));
                     final JsonArray values = new JsonArray();
                     final List<EnumValueDescriptorProto> valueList = ((EnumDescriptorProto) descriptor)
                             .getValueList();
@@ -140,8 +227,8 @@ public class Main {
                     json.add("name", new JsonPrimitive(
                             ((DescriptorProto) descriptor).getName()));
                     json.add("type", new JsonPrimitive("Message"));
-                    json.add("filename", new JsonPrimitive(fdp.getName()));
-                    json.add("package", new JsonPrimitive(fdp.getPackage()));
+                    json.add("filename", new JsonPrimitive(name));
+                    json.add("package", new JsonPrimitive(pkgName));
                     final JsonArray properties = new JsonArray();
                     final List<FieldDescriptorProto> propertyList = ((DescriptorProto) descriptor)
                             .getFieldList();
@@ -182,6 +269,217 @@ public class Main {
             }
         }
 
+        return jsonArray;
+    }
+
+    /**
+     * Generate Swagger
+     *
+     * @param name
+     *            the service name
+     */
+    private static final void generateSwagger(final String name) {
+
+        // get a list of enums
+        final Map<String, EnumDescriptorProto> enums = new HashMap<String, EnumDescriptorProto>();
+        final Iterator<String> itEnums = _enums.keySet().iterator();
+        while (itEnums.hasNext()) {
+            final String pkgName = itEnums.next();
+            final List<EnumDescriptorProto> descriptors = _enums.get(pkgName);
+            for (final EnumDescriptorProto descriptor : descriptors) {
+                // process enums
+                enums.put("." + pkgName + "." + descriptor.getName(),
+                        (descriptor));
+            }
+        }
+
+        // loop through the dictionary we've built from the AST
+        final Iterator<String> itPackages = entities.keySet().iterator();
+        while (itPackages.hasNext()) {
+            final String pkgName = itPackages.next();
+            final List<GeneratedMessageV3> descriptors = entities.get(pkgName);
+            for (final GeneratedMessageV3 descriptor : descriptors) {
+                // process messages
+                if (descriptor instanceof DescriptorProto) {
+                    final JsonObject definitions = swaggerDoc
+                            .getAsJsonObject("definitions");
+                    final JsonObject definition = new JsonObject();
+                    definitions.add(((DescriptorProto) descriptor).getName(),
+                            definition);
+                    definition.add("type", new JsonPrimitive("object"));
+                    definition.add("additionalProperties", new JsonPrimitive(
+                            false));
+                    final JsonObject properties = new JsonObject();
+                    definition.add("properties", properties);
+                    final List<FieldDescriptorProto> fieldList = ((DescriptorProto) descriptor)
+                            .getFieldList();
+                    for (final FieldDescriptorProto field : fieldList) {
+                        final JsonObject property = new JsonObject();
+                        properties.add(field.getName(), property);
+                        if ("LABEL_REPEATED"
+                                .equals(field.getLabel().toString())) {
+
+                            property.add("type", new JsonPrimitive("array"));
+                            final JsonObject items = new JsonObject();
+                            property.add("items", items);
+                            if (field.hasTypeName()) {
+                                final String typeName = field.getTypeName();
+                                System.err.println("Type: " + typeName);
+                                if (enums.containsKey(typeName)) {
+                                    // it's an Enum
+                                    final EnumDescriptorProto eDescriptor = enums
+                                            .get(typeName);
+                                    items.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    items.add("format", new JsonPrimitive(
+                                            "int32"));
+                                    final List<EnumValueDescriptorProto> valueList = eDescriptor
+                                            .getValueList();
+                                    final StringBuilder sb = new StringBuilder();
+                                    final JsonArray values = new JsonArray();
+                                    for (final EnumValueDescriptorProto enumValue : valueList) {
+                                        sb.append(enumValue.getName() + "="
+                                                + enumValue.getNumber() + ", ");
+                                        values.add(new JsonPrimitive(enumValue
+                                                .getNumber()));
+                                    }
+                                    items.add("enum", values);
+                                    items.add(
+                                            "description",
+                                            new JsonPrimitive(
+                                                    sb.toString()
+                                                            .substring(
+                                                                    0,
+                                                                    sb.toString()
+                                                                            .length() - 2)));
+
+                                } else {
+                                    // it's a $ref to another Message
+                                    final String refName = "#/definitions/"
+                                            + typeName.substring(typeName
+                                                    .lastIndexOf(".") + 1);
+                                    items.add("$ref",
+                                            new JsonPrimitive(refName));
+                                }
+                            } else {
+                                final String typ = field.getType().name();
+                                if ("TYPE_STRING".equals(typ)) {
+                                    items.add("type", new JsonPrimitive(
+                                            "string"));
+                                } else if ("TYPE_DOUBLE".equals(typ)) {
+                                    items.add("type", new JsonPrimitive(
+                                            "number"));
+                                    items.add("format", new JsonPrimitive(
+                                            "double"));
+                                } else if ("TYPE_INT32".equals(typ)) {
+                                    items.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    items.add("format", new JsonPrimitive(
+                                            "int32"));
+                                } else if ("TYPE_INT64".equals(typ)) {
+                                    items.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    items.add("format", new JsonPrimitive(
+                                            "int64"));
+                                }
+                            }
+                        } else {
+                            if (field.hasTypeName()) {
+                                final String typeName = field.getTypeName();
+                                System.err.println("Type: " + typeName);
+                                if (enums.containsKey(typeName)) {
+                                    // it's an Enum
+                                    final EnumDescriptorProto eDescriptor = enums
+                                            .get(typeName);
+                                    property.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    property.add("format", new JsonPrimitive(
+                                            "int32"));
+                                    final List<EnumValueDescriptorProto> valueList = eDescriptor
+                                            .getValueList();
+                                    final StringBuilder sb = new StringBuilder();
+                                    final JsonArray values = new JsonArray();
+                                    for (final EnumValueDescriptorProto enumValue : valueList) {
+                                        sb.append(enumValue.getName() + "="
+                                                + enumValue.getNumber() + ", ");
+                                        values.add(new JsonPrimitive(enumValue
+                                                .getNumber()));
+                                    }
+                                    property.add("enum", values);
+                                    property.add(
+                                            "description",
+                                            new JsonPrimitive(
+                                                    sb.toString()
+                                                            .substring(
+                                                                    0,
+                                                                    sb.toString()
+                                                                            .length() - 2)));
+                                } else {
+                                    // it's a $ref to another Message
+                                    final String refName = "#/definitions/"
+                                            + typeName.substring(typeName
+                                                    .lastIndexOf(".") + 1);
+                                    property.add("$ref", new JsonPrimitive(
+                                            refName));
+                                }
+                            } else {
+                                final String typ = field.getType().name();
+                                if ("TYPE_STRING".equals(typ)) {
+                                    property.add("type", new JsonPrimitive(
+                                            "string"));
+                                } else if ("TYPE_DOUBLE".equals(typ)) {
+                                    property.add("type", new JsonPrimitive(
+                                            "number"));
+                                    property.add("format", new JsonPrimitive(
+                                            "double"));
+                                } else if ("TYPE_INT32".equals(typ)) {
+                                    property.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    property.add("format", new JsonPrimitive(
+                                            "int32"));
+                                } else if ("TYPE_INT64".equals(typ)) {
+                                    property.add("type", new JsonPrimitive(
+                                            "integer"));
+                                    property.add("format", new JsonPrimitive(
+                                            "int64"));
+                                }
+                            }
+                        }
+                    }
+                    swaggerDoc.add("definitions", definitions);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Process a single file in the .proto file list supplied by protoc, write
+     * whatever we've generated to the response-builder.
+     *
+     * @param fdp
+     *            the .proto file descriptor, as supplied by the protoc compiler
+     * @param responseBuilder
+     *            the buider to contain the response
+     */
+    private static final void processFile(final FileDescriptorProto fdp,
+            final Builder responseBuilder) {
+
+        // get top-level enums and messages
+        final List<EnumDescriptorProto> enums = fdp.getEnumTypeList();
+        final List<DescriptorProto> messages = fdp.getMessageTypeList();
+        processServices(fdp);
+
+        // set up a map to record the AST
+        entities.clear();
+        entities.put(fdp.getPackage(), new ArrayList<GeneratedMessageV3>());
+
+        // get enums and messages nested inside of top-level messages
+        traverseAST(fdp.getPackage(), enums, messages);
+
+        // the JSON structure we will fill in and write to the response-builder
+        final JsonArray jsonArray = generateMeta(fdp.getName());
+
         // add the JSON we've built to the response
         final PluginProtos.CodeGeneratorResponse.File.Builder f = PluginProtos.CodeGeneratorResponse.File
                 .newBuilder();
@@ -210,6 +508,7 @@ public class Main {
             System.err.println("Processing: " + fdp.getName());
             processFile(fdp, responseBuilder);
         }
+        generateSwagger("Identity");
 
     }
 
@@ -218,7 +517,9 @@ public class Main {
      *            command-line arguments
      */
     public static void main(final String[] args) {
-        System.err.println("Demo protoc-plugin starting ...");
+        // System.err.println("Demo protoc-plugin starting ...");
+        buildSwaggerSkeleton("Identity");
+
         try {
             // get the request from System.in (stdin)
             final CodeGeneratorRequest codeGeneratorRequest = CodeGeneratorRequest
@@ -235,10 +536,17 @@ public class Main {
             // write the response to System.out (stdout)
             codeGeneratorResponseBuilder.build().writeTo(System.out);
 
+            System.err.println(gson.toJson(swaggerDoc));
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        System.err.println("Demo protoc-plugin ending ...");
+
+        // System.err.println("Entities: " + entities.keySet());
+        // System.err.println("Messages: " + _messages.keySet());
+        // System.err.println("Enums: " + _enums.keySet());
+
+        // System.err.println("Demo protoc-plugin ending ...");
     }
 
 }
