@@ -46,6 +46,7 @@ public class Main {
 
     private static final HashMap<String, List<EnumDescriptorProto>> _enums = new HashMap<String, List<EnumDescriptorProto>>();
     private static final HashMap<String, List<DescriptorProto>> _messages = new HashMap<String, List<DescriptorProto>>();
+    private static final List<ServiceDescriptorProto> _services = new ArrayList<ServiceDescriptorProto>();
 
     private static final JsonObject swaggerDoc = new JsonObject();
 
@@ -165,9 +166,10 @@ public class Main {
         }
     }
 
-    private static void processServices(final FileDescriptorProto fdp) {
+    private static void processServices(
+            final List<ServiceDescriptorProto> services) {
 
-        final List<ServiceDescriptorProto> services = fdp.getServiceList();
+        _services.addAll(services);
 
         for (final ServiceDescriptorProto service : services) {
             final String serviceName = service.getName();
@@ -306,7 +308,7 @@ public class Main {
                 definitions.add(descriptor.getName(), definition);
                 definition.add("type", new JsonPrimitive("object"));
                 definition
-                .add("additionalProperties", new JsonPrimitive(false));
+                        .add("additionalProperties", new JsonPrimitive(false));
                 final JsonObject properties = new JsonObject();
                 definition.add("properties", properties);
                 final List<FieldDescriptorProto> fieldList = descriptor
@@ -321,7 +323,7 @@ public class Main {
                         property.add("items", items);
                         if (field.hasTypeName()) {
                             final String typeName = field.getTypeName();
-                            // System.err.println("Type: " + typeName);
+                            System.err.println("Type: " + typeName);
                             if (enums.containsKey(typeName)) {
                                 // it's an Enum
                                 final EnumDescriptorProto eDescriptor = enums
@@ -343,10 +345,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                .substring(
-                                                        0,
-                                                        sb.toString()
-                                                        .length() - 2)));
+                                                        .substring(
+                                                                0,
+                                                                sb.toString()
+                                                                        .length() - 2)));
 
                             } else {
                                 // it's a $ref to another Message
@@ -373,7 +375,7 @@ public class Main {
                     } else {
                         if (field.hasTypeName()) {
                             final String typeName = field.getTypeName();
-                            // System.err.println("Type: " + typeName);
+                            System.err.println("Type: " + typeName);
                             if (enums.containsKey(typeName)) {
                                 // it's an Enum
                                 final EnumDescriptorProto eDescriptor = enums
@@ -397,10 +399,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                .substring(
-                                                        0,
-                                                        sb.toString()
-                                                        .length() - 2)));
+                                                        .substring(
+                                                                0,
+                                                                sb.toString()
+                                                                        .length() - 2)));
                             } else {
                                 // it's a $ref to another Message
                                 final String refName = "#/definitions/"
@@ -437,6 +439,49 @@ public class Main {
 
         }
 
+        // process services
+        final JsonObject paths = swaggerDoc.getAsJsonObject("paths");
+
+        for (final ServiceDescriptorProto service : _services) {
+            final List<MethodDescriptorProto> methods = service.getMethodList();
+            for (final MethodDescriptorProto method : methods) {
+                final String methodName = method.getName();
+                final String inParam = method.getInputType();
+                final String outParam = method.getOutputType();
+                final JsonObject verbs = new JsonObject();
+                paths.add("/" + methodName, verbs);
+                final JsonObject verb = new JsonObject();
+                verbs.add("post", verb);
+                final JsonArray parameters = new JsonArray();
+                verb.add("parameters", parameters);
+                final JsonObject parameter = new JsonObject();
+                parameter.add("name", new JsonPrimitive("data"));
+                parameter.add("in", new JsonPrimitive("body"));
+                parameter.add("required", new JsonPrimitive(true));
+                final JsonObject inSchema = new JsonObject();
+                inSchema.add("$ref", new JsonPrimitive("#/definitions/"
+                        + inParam.substring(inParam.lastIndexOf(".") + 1)));
+                parameter.add("schema", inSchema);
+                parameters.add(parameter);
+                final JsonObject responses = new JsonObject();
+                verb.add("responses", responses);
+                final JsonObject response = new JsonObject();
+                responses.add("200", response);
+                final JsonObject outSchema = new JsonObject();
+                response.add("description", new JsonPrimitive("Success"));
+                outSchema.add("$ref", new JsonPrimitive("#/definitions/"
+                        + outParam.substring(outParam.lastIndexOf(".") + 1)));
+                response.add("schema", outSchema);
+                final JsonArray security = new JsonArray();
+                final JsonObject secure = new JsonObject();
+                secure.add("api_key", new JsonArray());
+                security.add(secure);
+                verb.add("security", security);
+            }
+        }
+
+        swaggerDoc.add("paths", paths);
+
     }
 
     /**
@@ -454,7 +499,8 @@ public class Main {
         // get top-level enums and messages
         final List<EnumDescriptorProto> enums = fdp.getEnumTypeList();
         final List<DescriptorProto> messages = fdp.getMessageTypeList();
-        processServices(fdp);
+        final List<ServiceDescriptorProto> services = fdp.getServiceList();
+        processServices(services);
 
         // set up a map to record the AST
         entities.clear();
