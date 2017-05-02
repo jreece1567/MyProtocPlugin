@@ -294,161 +294,147 @@ public class Main {
         }
 
         // loop through the dictionary we've built from the AST
-        final Iterator<String> itPackages = entities.keySet().iterator();
+        final Iterator<String> itPackages = _messages.keySet().iterator();
         while (itPackages.hasNext()) {
             final String pkgName = itPackages.next();
-            final List<GeneratedMessageV3> descriptors = entities.get(pkgName);
-            for (final GeneratedMessageV3 descriptor : descriptors) {
+            final List<DescriptorProto> descriptors = _messages.get(pkgName);
+            for (final DescriptorProto descriptor : descriptors) {
                 // process messages
-                if (descriptor instanceof DescriptorProto) {
-                    final JsonObject definitions = swaggerDoc
-                            .getAsJsonObject("definitions");
-                    final JsonObject definition = new JsonObject();
-                    definitions.add(((DescriptorProto) descriptor).getName(),
-                            definition);
-                    definition.add("type", new JsonPrimitive("object"));
-                    definition.add("additionalProperties", new JsonPrimitive(
-                            false));
-                    final JsonObject properties = new JsonObject();
-                    definition.add("properties", properties);
-                    final List<FieldDescriptorProto> fieldList = ((DescriptorProto) descriptor)
-                            .getFieldList();
-                    for (final FieldDescriptorProto field : fieldList) {
-                        final JsonObject property = new JsonObject();
-                        properties.add(field.getName(), property);
-                        if ("LABEL_REPEATED"
-                                .equals(field.getLabel().toString())) {
+                final JsonObject definitions = swaggerDoc
+                        .getAsJsonObject("definitions");
+                final JsonObject definition = new JsonObject();
+                definitions.add(descriptor.getName(), definition);
+                definition.add("type", new JsonPrimitive("object"));
+                definition
+                .add("additionalProperties", new JsonPrimitive(false));
+                final JsonObject properties = new JsonObject();
+                definition.add("properties", properties);
+                final List<FieldDescriptorProto> fieldList = descriptor
+                        .getFieldList();
+                for (final FieldDescriptorProto field : fieldList) {
+                    final JsonObject property = new JsonObject();
+                    properties.add(field.getName(), property);
+                    if ("LABEL_REPEATED".equals(field.getLabel().toString())) {
 
-                            property.add("type", new JsonPrimitive("array"));
-                            final JsonObject items = new JsonObject();
-                            property.add("items", items);
-                            if (field.hasTypeName()) {
-                                final String typeName = field.getTypeName();
-                                System.err.println("Type: " + typeName);
-                                if (enums.containsKey(typeName)) {
-                                    // it's an Enum
-                                    final EnumDescriptorProto eDescriptor = enums
-                                            .get(typeName);
-                                    items.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    items.add("format", new JsonPrimitive(
-                                            "int32"));
-                                    final List<EnumValueDescriptorProto> valueList = eDescriptor
-                                            .getValueList();
-                                    final StringBuilder sb = new StringBuilder();
-                                    final JsonArray values = new JsonArray();
-                                    for (final EnumValueDescriptorProto enumValue : valueList) {
-                                        sb.append(enumValue.getName() + "="
-                                                + enumValue.getNumber() + ", ");
-                                        values.add(new JsonPrimitive(enumValue
-                                                .getNumber()));
-                                    }
-                                    items.add("enum", values);
-                                    items.add(
-                                            "description",
-                                            new JsonPrimitive(
-                                                    sb.toString()
-                                                            .substring(
-                                                                    0,
-                                                                    sb.toString()
-                                                                            .length() - 2)));
-
-                                } else {
-                                    // it's a $ref to another Message
-                                    final String refName = "#/definitions/"
-                                            + typeName.substring(typeName
-                                                    .lastIndexOf(".") + 1);
-                                    items.add("$ref",
-                                            new JsonPrimitive(refName));
+                        property.add("type", new JsonPrimitive("array"));
+                        final JsonObject items = new JsonObject();
+                        property.add("items", items);
+                        if (field.hasTypeName()) {
+                            final String typeName = field.getTypeName();
+                            // System.err.println("Type: " + typeName);
+                            if (enums.containsKey(typeName)) {
+                                // it's an Enum
+                                final EnumDescriptorProto eDescriptor = enums
+                                        .get(typeName);
+                                items.add("type", new JsonPrimitive("integer"));
+                                items.add("format", new JsonPrimitive("int32"));
+                                final List<EnumValueDescriptorProto> valueList = eDescriptor
+                                        .getValueList();
+                                final StringBuilder sb = new StringBuilder();
+                                final JsonArray values = new JsonArray();
+                                for (final EnumValueDescriptorProto enumValue : valueList) {
+                                    sb.append(enumValue.getName() + "="
+                                            + enumValue.getNumber() + ", ");
+                                    values.add(new JsonPrimitive(enumValue
+                                            .getNumber()));
                                 }
+                                items.add("enum", values);
+                                items.add(
+                                        "description",
+                                        new JsonPrimitive(
+                                                sb.toString()
+                                                .substring(
+                                                        0,
+                                                        sb.toString()
+                                                        .length() - 2)));
+
                             } else {
-                                final String typ = field.getType().name();
-                                if ("TYPE_STRING".equals(typ)) {
-                                    items.add("type", new JsonPrimitive(
-                                            "string"));
-                                } else if ("TYPE_DOUBLE".equals(typ)) {
-                                    items.add("type", new JsonPrimitive(
-                                            "number"));
-                                    items.add("format", new JsonPrimitive(
-                                            "double"));
-                                } else if ("TYPE_INT32".equals(typ)) {
-                                    items.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    items.add("format", new JsonPrimitive(
-                                            "int32"));
-                                } else if ("TYPE_INT64".equals(typ)) {
-                                    items.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    items.add("format", new JsonPrimitive(
-                                            "int64"));
-                                }
+                                // it's a $ref to another Message
+                                final String refName = "#/definitions/"
+                                        + typeName.substring(typeName
+                                                .lastIndexOf(".") + 1);
+                                items.add("$ref", new JsonPrimitive(refName));
                             }
                         } else {
-                            if (field.hasTypeName()) {
-                                final String typeName = field.getTypeName();
-                                System.err.println("Type: " + typeName);
-                                if (enums.containsKey(typeName)) {
-                                    // it's an Enum
-                                    final EnumDescriptorProto eDescriptor = enums
-                                            .get(typeName);
-                                    property.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    property.add("format", new JsonPrimitive(
-                                            "int32"));
-                                    final List<EnumValueDescriptorProto> valueList = eDescriptor
-                                            .getValueList();
-                                    final StringBuilder sb = new StringBuilder();
-                                    final JsonArray values = new JsonArray();
-                                    for (final EnumValueDescriptorProto enumValue : valueList) {
-                                        sb.append(enumValue.getName() + "="
-                                                + enumValue.getNumber() + ", ");
-                                        values.add(new JsonPrimitive(enumValue
-                                                .getNumber()));
-                                    }
-                                    property.add("enum", values);
-                                    property.add(
-                                            "description",
-                                            new JsonPrimitive(
-                                                    sb.toString()
-                                                            .substring(
-                                                                    0,
-                                                                    sb.toString()
-                                                                            .length() - 2)));
-                                } else {
-                                    // it's a $ref to another Message
-                                    final String refName = "#/definitions/"
-                                            + typeName.substring(typeName
-                                                    .lastIndexOf(".") + 1);
-                                    property.add("$ref", new JsonPrimitive(
-                                            refName));
+                            final String typ = field.getType().name();
+                            if ("TYPE_STRING".equals(typ)) {
+                                items.add("type", new JsonPrimitive("string"));
+                            } else if ("TYPE_DOUBLE".equals(typ)) {
+                                items.add("type", new JsonPrimitive("number"));
+                                items.add("format", new JsonPrimitive("double"));
+                            } else if ("TYPE_INT32".equals(typ)) {
+                                items.add("type", new JsonPrimitive("integer"));
+                                items.add("format", new JsonPrimitive("int32"));
+                            } else if ("TYPE_INT64".equals(typ)) {
+                                items.add("type", new JsonPrimitive("integer"));
+                                items.add("format", new JsonPrimitive("int64"));
+                            }
+                        }
+                    } else {
+                        if (field.hasTypeName()) {
+                            final String typeName = field.getTypeName();
+                            // System.err.println("Type: " + typeName);
+                            if (enums.containsKey(typeName)) {
+                                // it's an Enum
+                                final EnumDescriptorProto eDescriptor = enums
+                                        .get(typeName);
+                                property.add("type", new JsonPrimitive(
+                                        "integer"));
+                                property.add("format", new JsonPrimitive(
+                                        "int32"));
+                                final List<EnumValueDescriptorProto> valueList = eDescriptor
+                                        .getValueList();
+                                final StringBuilder sb = new StringBuilder();
+                                final JsonArray values = new JsonArray();
+                                for (final EnumValueDescriptorProto enumValue : valueList) {
+                                    sb.append(enumValue.getName() + "="
+                                            + enumValue.getNumber() + ", ");
+                                    values.add(new JsonPrimitive(enumValue
+                                            .getNumber()));
                                 }
+                                property.add("enum", values);
+                                property.add(
+                                        "description",
+                                        new JsonPrimitive(
+                                                sb.toString()
+                                                .substring(
+                                                        0,
+                                                        sb.toString()
+                                                        .length() - 2)));
                             } else {
-                                final String typ = field.getType().name();
-                                if ("TYPE_STRING".equals(typ)) {
-                                    property.add("type", new JsonPrimitive(
-                                            "string"));
-                                } else if ("TYPE_DOUBLE".equals(typ)) {
-                                    property.add("type", new JsonPrimitive(
-                                            "number"));
-                                    property.add("format", new JsonPrimitive(
-                                            "double"));
-                                } else if ("TYPE_INT32".equals(typ)) {
-                                    property.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    property.add("format", new JsonPrimitive(
-                                            "int32"));
-                                } else if ("TYPE_INT64".equals(typ)) {
-                                    property.add("type", new JsonPrimitive(
-                                            "integer"));
-                                    property.add("format", new JsonPrimitive(
-                                            "int64"));
-                                }
+                                // it's a $ref to another Message
+                                final String refName = "#/definitions/"
+                                        + typeName.substring(typeName
+                                                .lastIndexOf(".") + 1);
+                                property.add("$ref", new JsonPrimitive(refName));
+                            }
+                        } else {
+                            final String typ = field.getType().name();
+                            if ("TYPE_STRING".equals(typ)) {
+                                property.add("type",
+                                        new JsonPrimitive("string"));
+                            } else if ("TYPE_DOUBLE".equals(typ)) {
+                                property.add("type",
+                                        new JsonPrimitive("number"));
+                                property.add("format", new JsonPrimitive(
+                                        "double"));
+                            } else if ("TYPE_INT32".equals(typ)) {
+                                property.add("type", new JsonPrimitive(
+                                        "integer"));
+                                property.add("format", new JsonPrimitive(
+                                        "int32"));
+                            } else if ("TYPE_INT64".equals(typ)) {
+                                property.add("type", new JsonPrimitive(
+                                        "integer"));
+                                property.add("format", new JsonPrimitive(
+                                        "int64"));
                             }
                         }
                     }
-                    swaggerDoc.add("definitions", definitions);
                 }
+                swaggerDoc.add("definitions", definitions);
             }
+
         }
 
     }
@@ -542,9 +528,9 @@ public class Main {
             e.printStackTrace();
         }
 
-        // System.err.println("Entities: " + entities.keySet());
-        // System.err.println("Messages: " + _messages.keySet());
-        // System.err.println("Enums: " + _enums.keySet());
+        // System.err.println("Entities: " + entities.keySet() + "\n");
+        // System.err.println("Messages: " + _messages.keySet() + "\n");
+        // System.err.println("Enums: " + _enums.keySet() + "\n");
 
         // System.err.println("Demo protoc-plugin ending ...");
     }
