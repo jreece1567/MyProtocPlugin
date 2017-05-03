@@ -52,7 +52,7 @@ public class Main {
 
     /**
      * Generate a skeleton of a Swagger-JSON, with all top-level element stubs
-     * 
+     *
      * @param serviceName
      *            the name of the service
      */
@@ -81,7 +81,8 @@ public class Main {
 
         final JsonArray tags = new JsonArray();
         final JsonObject tag = new JsonObject();
-        tag.add("name", new JsonPrimitive(""));
+        tag.add("name", new JsonPrimitive("IDENTITY"));
+        tags.add(tag);
         swaggerDoc.add("tags", tags);
 
         final JsonArray schemes = new JsonArray();
@@ -295,7 +296,7 @@ public class Main {
                 definitions.add(descriptor.getName(), definition);
                 definition.add("type", new JsonPrimitive("object"));
                 definition
-                .add("additionalProperties", new JsonPrimitive(false));
+                        .add("additionalProperties", new JsonPrimitive(false));
                 final JsonObject properties = new JsonObject();
                 definition.add("properties", properties);
                 final List<FieldDescriptorProto> fieldList = descriptor
@@ -333,10 +334,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                .substring(
-                                                        0,
-                                                        sb.toString()
-                                                        .length() - 2)));
+                                                        .substring(
+                                                                0,
+                                                                sb.toString()
+                                                                        .length() - 2)));
 
                             } else {
                                 // it's a $ref to another Message
@@ -388,10 +389,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                .substring(
-                                                        0,
-                                                        sb.toString()
-                                                        .length() - 2)));
+                                                        .substring(
+                                                                0,
+                                                                sb.toString()
+                                                                        .length() - 2)));
                             } else {
                                 // it's a $ref to another Message
                                 final String refName = "#/definitions/"
@@ -441,6 +442,9 @@ public class Main {
                 paths.add("/" + methodName, verbs);
                 final JsonObject verb = new JsonObject();
                 verbs.add("post", verb);
+                final JsonArray tags = new JsonArray();
+                tags.add(new JsonPrimitive("IDENTITY"));
+                verb.add("tags", tags);
                 final JsonArray parameters = new JsonArray();
                 verb.add("parameters", parameters);
                 final JsonObject parameter = new JsonObject();
