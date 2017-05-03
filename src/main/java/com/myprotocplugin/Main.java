@@ -50,6 +50,12 @@ public class Main {
 
     private static final JsonObject swaggerDoc = new JsonObject();
 
+    /**
+     * Generate a skeleton of a Swagger-JSON, with all top-level element stubs
+     * 
+     * @param serviceName
+     *            the name of the service
+     */
     private static void buildSwaggerSkeleton(final String serviceName) {
 
         // final JsonObject swaggerDoc = new JsonObject();
@@ -112,7 +118,7 @@ public class Main {
         final JsonObject paths = new JsonObject();
         swaggerDoc.add("paths", paths);
 
-        System.err.println(gson.toJson(swaggerDoc));
+        // System.err.println(gson.toJson(swaggerDoc));
     }
 
     /**
@@ -166,25 +172,6 @@ public class Main {
         }
     }
 
-    private static void processServices(
-            final List<ServiceDescriptorProto> services) {
-
-        _services.addAll(services);
-
-        for (final ServiceDescriptorProto service : services) {
-            final String serviceName = service.getName();
-            System.err.println("Service:" + serviceName);
-            final List<MethodDescriptorProto> methods = service.getMethodList();
-            for (final MethodDescriptorProto method : methods) {
-                final String methodName = method.getName();
-                final String inParam = method.getInputType();
-                final String outParam = method.getOutputType();
-                System.err.println("Method: " + methodName + "(" + inParam
-                        + ") returns " + outParam);
-            }
-        }
-    }
-
     /**
      * Generate the Meta-JSON
      *
@@ -192,7 +179,7 @@ public class Main {
      *            the service name
      * @return an array of meta JSON
      */
-    private static final JsonArray generateMeta(final String name) {
+    private static final JsonArray generateMetaJSON(final String name) {
         final JsonArray jsonArray = new JsonArray();
 
         // loop through the dictionary we've built from the AST
@@ -275,12 +262,12 @@ public class Main {
     }
 
     /**
-     * Generate Swagger
+     * Generate Swagger JSON
      *
      * @param name
      *            the service name
      */
-    private static final void generateSwagger(final String name) {
+    private static final void generateSwaggerJSON() {
 
         // get a list of enums
         final Map<String, EnumDescriptorProto> enums = new HashMap<String, EnumDescriptorProto>();
@@ -295,7 +282,7 @@ public class Main {
             }
         }
 
-        // loop through the dictionary we've built from the AST
+        // loop through the list of messages we've built from the AST
         final Iterator<String> itPackages = _messages.keySet().iterator();
         while (itPackages.hasNext()) {
             final String pkgName = itPackages.next();
@@ -308,7 +295,7 @@ public class Main {
                 definitions.add(descriptor.getName(), definition);
                 definition.add("type", new JsonPrimitive("object"));
                 definition
-                        .add("additionalProperties", new JsonPrimitive(false));
+                .add("additionalProperties", new JsonPrimitive(false));
                 final JsonObject properties = new JsonObject();
                 definition.add("properties", properties);
                 final List<FieldDescriptorProto> fieldList = descriptor
@@ -316,6 +303,7 @@ public class Main {
                 for (final FieldDescriptorProto field : fieldList) {
                     final JsonObject property = new JsonObject();
                     properties.add(field.getName(), property);
+                    // handle array field
                     if ("LABEL_REPEATED".equals(field.getLabel().toString())) {
 
                         property.add("type", new JsonPrimitive("array"));
@@ -323,7 +311,7 @@ public class Main {
                         property.add("items", items);
                         if (field.hasTypeName()) {
                             final String typeName = field.getTypeName();
-                            System.err.println("Type: " + typeName);
+                            // System.err.println("Type: " + typeName);
                             if (enums.containsKey(typeName)) {
                                 // it's an Enum
                                 final EnumDescriptorProto eDescriptor = enums
@@ -345,10 +333,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                        .substring(
-                                                                0,
-                                                                sb.toString()
-                                                                        .length() - 2)));
+                                                .substring(
+                                                        0,
+                                                        sb.toString()
+                                                        .length() - 2)));
 
                             } else {
                                 // it's a $ref to another Message
@@ -373,9 +361,10 @@ public class Main {
                             }
                         }
                     } else {
+                        // handle single-occurrence (non-array) field
                         if (field.hasTypeName()) {
                             final String typeName = field.getTypeName();
-                            System.err.println("Type: " + typeName);
+                            // System.err.println("Type: " + typeName);
                             if (enums.containsKey(typeName)) {
                                 // it's an Enum
                                 final EnumDescriptorProto eDescriptor = enums
@@ -399,10 +388,10 @@ public class Main {
                                         "description",
                                         new JsonPrimitive(
                                                 sb.toString()
-                                                        .substring(
-                                                                0,
-                                                                sb.toString()
-                                                                        .length() - 2)));
+                                                .substring(
+                                                        0,
+                                                        sb.toString()
+                                                        .length() - 2)));
                             } else {
                                 // it's a $ref to another Message
                                 final String refName = "#/definitions/"
@@ -500,7 +489,7 @@ public class Main {
         final List<EnumDescriptorProto> enums = fdp.getEnumTypeList();
         final List<DescriptorProto> messages = fdp.getMessageTypeList();
         final List<ServiceDescriptorProto> services = fdp.getServiceList();
-        processServices(services);
+        _services.addAll(services);
 
         // set up a map to record the AST
         entities.clear();
@@ -510,7 +499,7 @@ public class Main {
         traverseAST(fdp.getPackage(), enums, messages);
 
         // the JSON structure we will fill in and write to the response-builder
-        final JsonArray jsonArray = generateMeta(fdp.getName());
+        final JsonArray jsonArray = generateMetaJSON(fdp.getName());
 
         // add the JSON we've built to the response
         final PluginProtos.CodeGeneratorResponse.File.Builder f = PluginProtos.CodeGeneratorResponse.File
@@ -540,7 +529,6 @@ public class Main {
             System.err.println("Processing: " + fdp.getName());
             processFile(fdp, responseBuilder);
         }
-        generateSwagger("Identity");
 
     }
 
@@ -550,7 +538,6 @@ public class Main {
      */
     public static void main(final String[] args) {
         // System.err.println("Demo protoc-plugin starting ...");
-        buildSwaggerSkeleton("Identity");
 
         try {
             // get the request from System.in (stdin)
@@ -568,15 +555,14 @@ public class Main {
             // write the response to System.out (stdout)
             codeGeneratorResponseBuilder.build().writeTo(System.out);
 
+            buildSwaggerSkeleton("Identity");
+            generateSwaggerJSON();
+
             System.err.println(gson.toJson(swaggerDoc));
 
         } catch (final IOException e) {
             e.printStackTrace();
         }
-
-        // System.err.println("Entities: " + entities.keySet() + "\n");
-        // System.err.println("Messages: " + _messages.keySet() + "\n");
-        // System.err.println("Enums: " + _enums.keySet() + "\n");
 
         // System.err.println("Demo protoc-plugin ending ...");
     }
