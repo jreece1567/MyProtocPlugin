@@ -1,0 +1,1193 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "WRS Location Service",
+    "version": "1.0",
+    "description": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:09 PDT 2017",
+    "license": {
+      "name": "Apache 2 License",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "Westfield Support",
+      "url": "http://www.westfieldstatus.com",
+      "email": "help@westfieldsupport.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "LOCATION"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "description": "A Westfield API-key.",
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "query"
+    }
+  },
+  "x-service-access": [
+    ""
+  ],
+  "definitions": {
+    "GetBeaconUuidsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        },
+        "response_limit": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GetBeaconUuidsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        },
+        "beacons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Beacon"
+          }
+        }
+      }
+    },
+    "Beacon": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "beacon_uuid": {
+          "type": "string"
+        },
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        },
+        "beacon_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, EDDYSTONE_UID=1, EDDYSTONE_URL=2, EDDYSTONE_TLM=3, EDDYSTONE_EID=4, I_BEACON=5"
+        },
+        "beacon_manufacturer": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36
+          ],
+          "description": "UNKNOWN=0, ACCENT_SYSTEMS=1, BEACONINSIDE=2, BLESH=3, BLUECATS=4, BLUEUP=5, BLUVISON=6, ESTIMOTE=7, GIMBAL=8, KONTAKT_IO=9, MINEWTECH=10, NORDIC_SEMICONDUCTOR=11, RADIUS_NETWORKS=12, RECO=13, SENSORO=14, SIGNAL360=15, BEACONGRID=16, BEACONIX=17, BECO=18, BKON=19, BLUE_BITE=20, EM_MICROELECTRONIC=21, GEMTOT=22, GLIMWORM=23, GLUE_AND_BLUE=24, INTEGRIT=25, KS_TECHNOLOGIES=26, ONYX=27, ORANGE=28, POI=29, PROX_IOT=30, RUUVI=31, SEMSEYE=32, SK_TELECOM=33, SWIRL=34, TANGERINE_IO=35, ZEBRA=36"
+        }
+      }
+    },
+    "CreateBeaconUuidRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "beacon_uuid": {
+          "type": "string"
+        },
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        },
+        "beacon_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, EDDYSTONE_UID=1, EDDYSTONE_URL=2, EDDYSTONE_TLM=3, EDDYSTONE_EID=4, I_BEACON=5"
+        },
+        "beacon_manufacturer": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36
+          ],
+          "description": "UNKNOWN=0, ACCENT_SYSTEMS=1, BEACONINSIDE=2, BLESH=3, BLUECATS=4, BLUEUP=5, BLUVISON=6, ESTIMOTE=7, GIMBAL=8, KONTAKT_IO=9, MINEWTECH=10, NORDIC_SEMICONDUCTOR=11, RADIUS_NETWORKS=12, RECO=13, SENSORO=14, SIGNAL360=15, BEACONGRID=16, BEACONIX=17, BECO=18, BKON=19, BLUE_BITE=20, EM_MICROELECTRONIC=21, GEMTOT=22, GLIMWORM=23, GLUE_AND_BLUE=24, INTEGRIT=25, KS_TECHNOLOGIES=26, ONYX=27, ORANGE=28, POI=29, PROX_IOT=30, RUUVI=31, SEMSEYE=32, SK_TELECOM=33, SWIRL=34, TANGERINE_IO=35, ZEBRA=36"
+        }
+      }
+    },
+    "CreateBeaconUuidResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, BEACON_ALREADY_EXISTS=3"
+        },
+        "beacon_id": {
+          "type": "string"
+        },
+        "beacon_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchCreateBeaconUuidsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_beacon_uuid_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CreateBeaconUuidRequest"
+          }
+        }
+      }
+    },
+    "BatchCreateBeaconUuidsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_beacon_uuid_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CreateBeaconUuidResponse"
+          }
+        }
+      }
+    },
+    "UpdateBeaconUuidRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "beacon_id": {
+          "type": "string"
+        },
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        }
+      }
+    },
+    "UpdateBeaconUuidResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, BEACON_NOT_EXISTS=3, INVALID_REQUEST=4"
+        },
+        "beacon_id": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchUpdateBeaconUuidsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "update_beacon_uuid_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UpdateBeaconUuidRequest"
+          }
+        }
+      }
+    },
+    "BatchUpdateBeaconUuidsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "update_beacon_uuid_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UpdateBeaconUuidResponse"
+          }
+        }
+      }
+    },
+    "DeleteBeaconUuidRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "beacon_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeleteBeaconUuidResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, BEACON_NOT_EXISTS=3"
+        },
+        "beacon_id": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchDeleteBeaconUuidsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delete_beacon_uuid_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeleteBeaconUuidRequest"
+          }
+        }
+      }
+    },
+    "BatchDeleteBeaconUuidsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delete_beacon_uuid_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeleteBeaconUuidResponse"
+          }
+        }
+      }
+    },
+    "StoreBeaconEventRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "os_vendor_id": {
+          "type": "string"
+        },
+        "beacon_uuid": {
+          "type": "string"
+        },
+        "beacon_major": {},
+        "beacon_minor": {},
+        "timestamp": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "rssi_value": {
+          "type": "string"
+        },
+        "packet": {},
+        "proximity_level": {
+          "type": "string"
+        },
+        "accuracy": {},
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        }
+      }
+    },
+    "StoreBeaconEventResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        },
+        "beacon_event_id": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchStoreBeaconEventRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_beacon_event_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreBeaconEventRequest"
+          }
+        }
+      }
+    },
+    "BatchStoreBeaconEventResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_beacon_event_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreBeaconEventResponse"
+          }
+        }
+      }
+    },
+    "Timestamp": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "seconds": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "nanos": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "StoreLocationEventRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "venue_id": {
+          "type": "string"
+        },
+        "os_vendor_id": {
+          "type": "string"
+        },
+        "current_zone_id": {
+          "type": "string"
+        },
+        "current_zone_name": {
+          "type": "string"
+        },
+        "data_rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DataRow"
+          }
+        }
+      }
+    },
+    "DataRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {},
+        "zone_id": {
+          "type": "string"
+        },
+        "zone_name": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "venue_level": {},
+        "cartesian_coordinate": {
+          "$ref": "#/definitions/CartesianCoordinate"
+        },
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        },
+        "horizontal_accuracy": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "description": "UNKNOWN=0, INITIALIZED=1, NOT_INITIALIZED=2, LOW_ACCURACY=3, HIGH_ACCURACY=4, DWELLING=5, IN_STORE=6, IN_RESTROOM=7, WALKING=8, RUNNING=9, PEOPLE_MOVER=10, PARKING=11, TRAVERSING_LOT=12, DRIVING=13, AREA=14, ENTER_VENUE=15, INVENUE=16, ENTER_ZONE=17, LEAVE_ZONE=18, NO_VENUE=19, ERROR_NO_BLE=20, ERROR_NO_PERMISSION=21, ERROR_NO_LOC_SERVICE=22, ERROR_NO_GEO_REF=23, ERROR_NO_INTERNET=24, ERROR_IN_VALID_SL=25, ERROR_NO_GEO_MESSAGING=26, ERROR_NO_COMPASS_CALIBRATION=27"
+        },
+        "signal": {
+          "$ref": "#/definitions/Signal"
+        }
+      }
+    },
+    "StoreLocationEventResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        }
+      }
+    },
+    "CartesianCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x_position": {
+          "type": "number",
+          "format": "double"
+        },
+        "y_position": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GeographicCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "double"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "RetailerGroupTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retailer_group_id": {
+          "type": "string"
+        },
+        "organization_party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StoreTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_id": {
+          "type": "string"
+        },
+        "retailer_group_id": {
+          "type": "string"
+        },
+        "venue_id": {
+          "type": "string"
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        }
+      }
+    },
+    "PrecinctTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "precinct_id": {
+          "type": "string"
+        },
+        "retailer_group_id": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        }
+      }
+    },
+    "ShelfTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shelf_id": {
+          "type": "string"
+        },
+        "retailer_group_id": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "precinct_id": {
+          "type": "string"
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        }
+      }
+    },
+    "ZoneTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zone_id": {
+          "type": "string"
+        },
+        "venue_id": {
+          "type": "string"
+        },
+        "store_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "name": {
+          "type": "string"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CartesianCoordinate"
+          }
+        }
+      }
+    },
+    "LocationEventTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "location_event_id": {
+          "type": "string"
+        },
+        "venue_id": {
+          "type": "string"
+        },
+        "zone_id": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "position": {
+          "$ref": "#/definitions/Position"
+        },
+        "signal": {
+          "$ref": "#/definitions/Signal"
+        },
+        "timestamp": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "description": "UNKNOWN=0, INITIALIZED=1, NOT_INITIALIZED=2, LOW_ACCURACY=3, HIGH_ACCURACY=4, DWELLING=5, IN_STORE=6, IN_RESTROOM=7, WALKING=8, RUNNING=9, PEOPLE_MOVER=10, PARKING=11, TRAVERSING_LOT=12, DRIVING=13, AREA=14, ENTER_VENUE=15, INVENUE=16, ENTER_ZONE=17, LEAVE_ZONE=18, NO_VENUE=19, ERROR_NO_BLE=20, ERROR_NO_PERMISSION=21, ERROR_NO_LOC_SERVICE=22, ERROR_NO_GEO_REF=23, ERROR_NO_INTERNET=24, ERROR_IN_VALID_SL=25, ERROR_NO_GEO_MESSAGING=26, ERROR_NO_COMPASS_CALIBRATION=27"
+        },
+        "person_party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "PropertyGroupTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_group_id": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "organization_party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "VenueTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "venue_id": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "property_group_id": {
+          "type": "string"
+        },
+        "venue_party_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Position": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cartesian_coordinate": {
+          "$ref": "#/definitions/CartesianCoordinate"
+        },
+        "geographic_coordinate": {
+          "$ref": "#/definitions/GeographicCoordinate"
+        },
+        "horizontal_accuracy": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "venue_level": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "signal_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, BLE=1, WIFI=2, CELLULAR=3"
+        },
+        "access_point_id": {
+          "type": "string"
+        },
+        "ble_version": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "description": "UNKNOWN=0, B_1_0=1, B_1_2=2, B_2_0=3, B_2_1=4, B_3_0=5, B_3_1=6, B_4_0=7, B_4_1=8"
+        },
+        "cellular_version": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, IS_95=1, GSM=2, CDMA=3, UMTS=4, LTE=5"
+        },
+        "wifi_version": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, WIFI_801_11_a=1, WIFI_801_11_g=2, WIFI_802_11_n=3, WIFI_802_11_ac=4"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/StoreLocationEvent": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoreLocationEventRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/StoreLocationEventResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/GetBeaconUuids": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetBeaconUuidsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBeaconUuidsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/CreateBeaconUuid": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateBeaconUuidRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CreateBeaconUuidResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchCreateBeaconUuids": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchCreateBeaconUuidsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchCreateBeaconUuidsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/UpdateBeaconUuid": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateBeaconUuidRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/UpdateBeaconUuidResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchUpdateBeaconUuids": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchUpdateBeaconUuidsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchUpdateBeaconUuidsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/DeleteBeaconUuid": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteBeaconUuidRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/DeleteBeaconUuidResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchDeleteBeaconUuids": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchDeleteBeaconUuidsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchDeleteBeaconUuidsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/StoreBeaconEvent": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoreBeaconEventRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/StoreBeaconEventResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchStoreBeaconEvent": {
+      "post": {
+        "tags": [
+          "LOCATION"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchStoreBeaconEventRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchStoreBeaconEventResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "WRS Product Service",
+    "version": "1.0",
+    "description": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:10 PDT 2017",
+    "license": {
+      "name": "Apache 2 License",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "Westfield Support",
+      "url": "http://www.westfieldstatus.com",
+      "email": "help@westfieldsupport.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "PRODUCT"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "description": "A Westfield API-key.",
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "query"
+    }
+  },
+  "x-service-access": [
+    ""
+  ],
+  "definitions": {
+    "GetProductRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "GetProductResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/GetProduct": {
+      "post": {
+        "tags": [
+          "PRODUCT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetProductResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
+}

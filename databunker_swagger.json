@@ -1,0 +1,521 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "WRS Databunker Service",
+    "version": "1.0",
+    "description": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:10 PDT 2017",
+    "license": {
+      "name": "Apache 2 License",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "Westfield Support",
+      "url": "http://www.westfieldstatus.com",
+      "email": "help@westfieldsupport.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "DATABUNKER"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "description": "A Westfield API-key.",
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "query"
+    }
+  },
+  "x-service-access": [
+    ""
+  ],
+  "definitions": {
+    "Timestamp": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "seconds": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "nanos": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "StoreRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expiration_date": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "data": {}
+      }
+    },
+    "StoreResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        },
+        "id": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchStoreRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreRequest"
+          }
+        }
+      }
+    },
+    "BatchStoreResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreResponse"
+          }
+        }
+      }
+    },
+    "RetrieveRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "RetrieveResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, NOT_FOUND=2, ERROR=3, DECRYPTION_ERROR=4, EXPIRED=5"
+        },
+        "id": {
+          "type": "string"
+        },
+        "created_date": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "expiration_date": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "data": {}
+      }
+    },
+    "BatchRetrieveRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retrieve_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RetrieveRequest"
+          }
+        }
+      }
+    },
+    "BatchRetrieveResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retrieve_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RetrieveResponse"
+          }
+        }
+      }
+    },
+    "RemoveRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "RemoveResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, NOT_FOUND=2, ERROR=3"
+        }
+      }
+    },
+    "BatchRemoveRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "remove_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RemoveRequest"
+          }
+        }
+      }
+    },
+    "BatchRemoveResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "remove_response": {
+          "$ref": "#/definitions/RemoveResponse"
+        }
+      }
+    },
+    "CalculateHashRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {}
+      }
+    },
+    "CalculateHashResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=3"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+    "BatchCalculateHashRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "calculate_hash_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CalculateHashRequest"
+          }
+        }
+      }
+    },
+    "BatchCalculateHashResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "calculate_hash_responses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CalculateHashResponse"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/Store": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StoreRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/StoreResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchStore": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchStoreRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchStoreResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/Retrieve": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetrieveRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/RetrieveResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchRetrieve": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchRetrieveRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchRetrieveResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/Remove": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/RemoveResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchRemove": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchRemoveRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchRemoveResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/CalculateHash": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CalculateHashRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CalculateHashResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/BatchCalculateHash": {
+      "post": {
+        "tags": [
+          "DATABUNKER"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchCalculateHashRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BatchCalculateHashResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,10 +1,10 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Identity",
+    "title": "WRS Identity Service",
     "version": "1.0",
     "description": "",
-    "x-last-modified-at": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:09 PDT 2017",
     "license": {
       "name": "Apache 2 License",
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
@@ -43,7 +43,7 @@
     ""
   ],
   "definitions": {
-    "PartyTable": {
+    "Party": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -70,9 +70,10 @@
           "enum": [
             0,
             1,
-            2
+            2,
+            3
           ],
-          "description": "UNKNOWN=0, FIRST_PARTY=1, THIRD_PARTY=2"
+          "description": "UNKNOWN=0, FIRST_PARTY=1, THIRD_PARTY=2, ANONYMOUS=3"
         },
         "party_owner": {
           "type": "string"
@@ -85,6 +86,17 @@
         },
         "party_data": {
           "$ref": "#/definitions/PartyData"
+        },
+        "party_status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, ACTIVE=1, INACTIVE=2, DELETED=3"
         }
       }
     },
@@ -103,7 +115,40 @@
         }
       }
     },
-    "RoleTable": {
+    "Person": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        }
+      }
+    },
+    "Organization": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Venue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Role": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -133,9 +178,10 @@
             13,
             14,
             15,
-            16
+            16,
+            17
           ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
         },
         "date_from": {
           "$ref": "#/definitions/Timestamp"
@@ -172,6 +218,9 @@
         },
         "vendor": {
           "$ref": "#/definitions/Vendor"
+        },
+        "facebook_messenger_user": {
+          "$ref": "#/definitions/FacebookMessengerUser"
         }
       }
     },
@@ -187,16 +236,16 @@
         "employee_id": {
           "type": "string"
         },
-        "email": {
+        "emails": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/EmailAddress"
           }
         },
         "phone_numbers": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/PhoneNumber"
           }
         },
         "business_address": {
@@ -241,7 +290,50 @@
       "additionalProperties": false,
       "properties": {}
     },
-    "PartyRelationshipTable": {
+    "FacebookMessengerUser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "profile_pic": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "is_payment_enabled": {},
+        "last_ad_referral": {
+          "$ref": "#/definitions/LastAdReferral"
+        }
+      }
+    },
+    "LastAdReferral": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "ad_id": {
+          "type": "string"
+        }
+      }
+    },
+    "PartyRelationship": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -286,9 +378,10 @@
             13,
             14,
             15,
-            16
+            16,
+            17
           ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
         },
         "party_id_to": {
           "type": "string"
@@ -313,9 +406,10 @@
             13,
             14,
             15,
-            16
+            16,
+            17
           ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
         },
         "date_from": {
           "$ref": "#/definitions/Timestamp"
@@ -334,7 +428,7 @@
         }
       }
     },
-    "PublicCredentialsTable": {
+    "PublicCredentials": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -344,20 +438,16 @@
         "party_id": {
           "type": "string"
         },
-        "credential_type": {
+        "public_credential_type": {
           "type": "integer",
           "format": "int32",
           "enum": [
             0,
             1,
             2,
-            3,
-            4,
-            5,
-            6,
-            7
+            3
           ],
-          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, DRIVERS_LICENSE=3, TAX_IDENTIFIER=4, PASSWORD=5, BIOMETRIC_TOKEN=6, OAUTH_TOKEN=7"
+          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, PASSWORD=3"
         },
         "date_from": {
           "$ref": "#/definitions/Timestamp"
@@ -365,16 +455,10 @@
         "date_to": {
           "$ref": "#/definitions/Timestamp"
         },
-        "value": {
-          "type": "string"
-        },
         "value_id": {
           "type": "string"
         },
         "value_hash": {
-          "type": "string"
-        },
-        "password": {
           "type": "string"
         },
         "password_id": {
@@ -382,10 +466,11 @@
         },
         "password_hash": {
           "type": "string"
-        }
+        },
+        "verified": {}
       }
     },
-    "PrivateCredentialsTable": {
+    "PrivateCredentials": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -398,7 +483,7 @@
         "role_id": {
           "type": "string"
         },
-        "credential_type": {
+        "private_credential_type": {
           "type": "integer",
           "format": "int32",
           "enum": [
@@ -406,12 +491,9 @@
             1,
             2,
             3,
-            4,
-            5,
-            6,
-            7
+            4
           ],
-          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, DRIVERS_LICENSE=3, TAX_IDENTIFIER=4, PASSWORD=5, BIOMETRIC_TOKEN=6, OAUTH_TOKEN=7"
+          "description": "UNKNOWN=0, OAUTH_TOKEN=1, BIOMETRIC_TOKEN=2, FACEBOOK_PSID=3, FACEBOOK_ID=4"
         },
         "date_from": {
           "$ref": "#/definitions/Timestamp"
@@ -419,16 +501,10 @@
         "date_to": {
           "$ref": "#/definitions/Timestamp"
         },
-        "value": {
-          "type": "string"
-        },
         "value_id": {
           "type": "string"
         },
         "value_hash": {
-          "type": "string"
-        },
-        "password": {
           "type": "string"
         },
         "password_id": {
@@ -436,47 +512,28 @@
         },
         "password_hash": {
           "type": "string"
-        }
+        },
+        "verified": {}
       }
     },
-    "Person": {
+    "EmailAddress": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
+        "email_key": {
           "type": "string"
         },
-        "first_name": {
+        "email": {
           "type": "string"
         },
-        "last_name": {
-          "type": "string"
-        }
-      }
-    },
-    "Organization": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "Venue": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string"
-        }
+        "verified": {}
       }
     },
     "Address": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "address_id": {
+        "address_key": {
           "type": "string"
         },
         "address_type": {
@@ -492,7 +549,7 @@
         "nickname": {
           "type": "string"
         },
-        "street_line": {
+        "street_lines": {
           "type": "array",
           "items": {
             "type": "string"
@@ -516,7 +573,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {
+        "phone_number_key": {
           "type": "string"
         },
         "phone_number_type": {
@@ -534,177 +591,6 @@
           "type": "string"
         },
         "number": {
-          "type": "string"
-        }
-      }
-    },
-    "Http": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rules": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/HttpRule"
-          }
-        }
-      }
-    },
-    "HttpRule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "selector": {
-          "type": "string"
-        },
-        "get": {
-          "type": "string"
-        },
-        "put": {
-          "type": "string"
-        },
-        "post": {
-          "type": "string"
-        },
-        "delete": {
-          "type": "string"
-        },
-        "patch": {
-          "type": "string"
-        },
-        "custom": {
-          "$ref": "#/definitions/CustomHttpPattern"
-        },
-        "body": {
-          "type": "string"
-        },
-        "additional_bindings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/HttpRule"
-          }
-        }
-      }
-    },
-    "CustomHttpPattern": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "kind": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        }
-      }
-    },
-    "CreatePartyRelationshipRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "party_relationship_type": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            9
-          ],
-          "description": "UNKNOWN=0, PARTNER=1, PARENT_CHILD=2, FAMILY=3, MARRIED=4, EMPLOYMENT=5, BUYER_SELLER=6, AFFILIATE=9"
-        },
-        "party_id_from": {
-          "type": "string"
-        },
-        "role_type_from": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16
-          ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
-        },
-        "party_id_to": {
-          "type": "string"
-        },
-        "role_type_to": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16
-          ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
-        },
-        "date_from": {
-          "$ref": "#/definitions/Timestamp"
-        },
-        "date_to": {
-          "$ref": "#/definitions/Timestamp"
-        },
-        "PartyRelationshipStatus": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1
-          ],
-          "description": "UNKNOWN=0, ACTIVE=1"
-        }
-      }
-    },
-    "CreatePartyRelationshipResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "status": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4
-          ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_FROM_NOT_EXISTS=3, PARTY_TO_NOT_EXISTS=4"
-        },
-        "party_relationship_id": {
           "type": "string"
         }
       }
@@ -1238,15 +1124,141 @@
         }
       }
     },
-    "ByTypeValue": {
+    "CreatePartyRelationshipRequest": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "credential_type": {
+        "party_relationship_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9
+          ],
+          "description": "UNKNOWN=0, PARTNER=1, PARENT_CHILD=2, FAMILY=3, MARRIED=4, EMPLOYMENT=5, BUYER_SELLER=6, AFFILIATE=9"
+        },
+        "party_id_from": {
           "type": "string"
         },
-        "value": {
+        "role_type_from": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
+        },
+        "party_id_to": {
           "type": "string"
+        },
+        "role_type_to": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "PartyRelationshipStatus": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1
+          ],
+          "description": "UNKNOWN=0, ACTIVE=1"
+        }
+      }
+    },
+    "CreatePartyRelationshipResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_FROM_NOT_EXISTS=3, PARTY_TO_NOT_EXISTS=4, PARTY_RELATIONSHIP_EXISTS=5"
+        },
+        "party_relationship_id": {
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "source_file": {
+          "type": "string"
+        },
+        "begin": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "end": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1274,9 +1286,10 @@
           "enum": [
             0,
             1,
-            2
+            2,
+            3
           ],
-          "description": "UNKNOWN=0, FIRST_PARTY=1, THIRD_PARTY=2"
+          "description": "UNKNOWN=0, FIRST_PARTY=1, THIRD_PARTY=2, ANONYMOUS=3"
         },
         "party_owner": {
           "type": "string"
@@ -1386,6 +1399,43 @@
       "additionalProperties": false,
       "properties": {}
     },
+    "UpdatePartyStatusRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "party_status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, ACTIVE=1, INACTIVE=2, DELETED=3"
+        }
+      }
+    },
+    "UpdatePartyStatusResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3"
+        }
+      }
+    },
     "DeletePartyRequest": {
       "type": "object",
       "additionalProperties": false,
@@ -1428,130 +1478,40 @@
           "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3"
         },
         "party": {
-          "$ref": "#/definitions/PartyTable"
+          "$ref": "#/definitions/Party"
         },
         "roles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/RoleTable"
+            "$ref": "#/definitions/Role"
           }
         },
         "party_relationships": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PartyRelationshipTable"
+            "$ref": "#/definitions/PartyRelationship"
           }
         },
         "public_credentials": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PublicCredentialsTable"
+            "$ref": "#/definitions/PublicCredentials"
           }
         },
         "private_credentials": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PrivateCredentialsTable"
+            "$ref": "#/definitions/PrivateCredentials"
           }
         }
       }
     },
-    "CreateAnonymousPartyRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "tapad_id": {
-          "type": "string"
-        },
-        "turn_id": {
-          "type": "string"
-        },
-        "advertisment_id": {
-          "type": "string"
-        },
-        "liveramp_key": {
-          "type": "string"
-        },
-        "appnexus_id": {
-          "type": "string"
-        },
-        "cookie": {
-          "type": "string"
-        }
-      }
-    },
-    "CreateAnonymousPartyResponse": {
+    "VerifyPersonEmailRequest": {
       "type": "object",
       "additionalProperties": false,
       "properties": {}
     },
-    "Annotation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "path": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "source_file": {
-          "type": "string"
-        },
-        "begin": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "end": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "CreateRoleRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "party_id": {
-          "type": "string"
-        },
-        "role_type": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16
-          ],
-          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16"
-        },
-        "date_from": {
-          "$ref": "#/definitions/Timestamp"
-        },
-        "date_to": {
-          "$ref": "#/definitions/Timestamp"
-        },
-        "role_data": {
-          "$ref": "#/definitions/RoleData"
-        }
-      }
-    },
-    "CreateRoleResponse": {
+    "VerifyPersonEmailResponse": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -1564,81 +1524,37 @@
             2,
             3
           ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, ALREADY_EXISTS=3"
-        },
-        "role_id": {
-          "type": "string"
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3"
         }
       }
     },
-    "CreatePublicCredentialsRequest": {
+    "GeneratePersonEmailValidationLinksRequest": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "party_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "string"
-        },
-        "credential_type": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7
-          ],
-          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, DRIVERS_LICENSE=3, TAX_IDENTIFIER=4, PASSWORD=5, BIOMETRIC_TOKEN=6, OAUTH_TOKEN=7"
-        },
-        "value": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
+      "properties": {}
     },
-    "CreatePrivateCredentialsRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "party_id": {
-          "type": "string"
-        },
-        "credential_type": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7
-          ],
-          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, DRIVERS_LICENSE=3, TAX_IDENTIFIER=4, PASSWORD=5, BIOMETRIC_TOKEN=6, OAUTH_TOKEN=7"
-        },
-        "value": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "CreateCredentialsResponse": {
+    "GeneratePersonEmailValidationLinksResponse": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3"
+        }
+      }
+    },
+    "ByTypeValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "private_credential_type": {
           "type": "integer",
           "format": "int32",
           "enum": [
@@ -1648,162 +1564,10 @@
             3,
             4
           ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3, ROLE_NOT_EXISTS=4"
-        },
-        "credentials_id": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthenticateRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "credential_type": {
-          "type": "string"
+          "description": "UNKNOWN=0, OAUTH_TOKEN=1, BIOMETRIC_TOKEN=2, FACEBOOK_PSID=3, FACEBOOK_ID=4"
         },
         "value": {
           "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthenticateTokenRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "credential_type": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthenticateResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "status": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3"
-        },
-        "party_id": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthenticateAndRetrieveResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "status": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3"
-        },
-        "party": {
-          "$ref": "#/definitions/PartyTable"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RoleTable"
-          }
-        },
-        "party_relationships": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PartyRelationshipTable"
-          }
-        },
-        "public_credentials": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PublicCredentialsTable"
-          }
-        },
-        "private_credentials": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PrivateCredentialsTable"
-          }
-        }
-      }
-    },
-    "DeleteCredentialsRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "credentials_id": {
-          "type": "string"
-        },
-        "type_value": {
-          "$ref": "#/definitions/ByTypeValue"
-        }
-      }
-    },
-    "DeleteCredentialsResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "status": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3"
-        }
-      }
-    },
-    "Location": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "path": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "span": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "leading_comments": {
-          "type": "string"
-        },
-        "trailing_comments": {
-          "type": "string"
-        },
-        "leading_detached_comments": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1843,6 +1607,478 @@
           "type": "string"
         },
         "is_extension": {}
+      }
+    },
+    "CreatePublicCredentialsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "public_credential_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, PASSWORD=3"
+        },
+        "value": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "verified": {}
+      }
+    },
+    "CreatePrivateCredentialsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "private_credential_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, OAUTH_TOKEN=1, BIOMETRIC_TOKEN=2, FACEBOOK_PSID=3, FACEBOOK_ID=4"
+        },
+        "value": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "verified": {}
+      }
+    },
+    "CreateCredentialsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3, ROLE_NOT_EXISTS=4, INVALID_PARTY_STATUS=5"
+        },
+        "credentials_id": {
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "public_credential_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, EMAIL=1, MOBILE_NUMBER=2, PASSWORD=3"
+        },
+        "value": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticateTokenRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "private_credential_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, OAUTH_TOKEN=1, BIOMETRIC_TOKEN=2, FACEBOOK_PSID=3, FACEBOOK_ID=4"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticateResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3, PARTY_NOT_EXISTS=4"
+        },
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticateAndRetrieveResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3, PARTY_NOT_EXISTS=4"
+        },
+        "party": {
+          "$ref": "#/definitions/Party"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Role"
+          }
+        },
+        "party_relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PartyRelationship"
+          }
+        },
+        "public_credentials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicCredentials"
+          }
+        },
+        "private_credentials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PrivateCredentials"
+          }
+        }
+      }
+    },
+    "DeletePublicCredentialsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "credentials_id": {
+          "type": "string"
+        },
+        "type_value": {
+          "$ref": "#/definitions/ByTypeValue"
+        }
+      }
+    },
+    "DeletePrivateCredentialsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "credentials_id": {
+          "type": "string"
+        },
+        "type_value": {
+          "$ref": "#/definitions/ByTypeValue"
+        }
+      }
+    },
+    "DeleteCredentialsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3, INVALID_REQUEST=4"
+        }
+      }
+    },
+    "GenerateCredentialsValidationLinksRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "GenerateCredentialsValidationLinksResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3"
+        }
+      }
+    },
+    "VerifyCredentialsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "VerifyCredentialsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, CREDENTIAL_NOT_EXISTS=3"
+        }
+      }
+    },
+    "Http": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HttpRule"
+          }
+        }
+      }
+    },
+    "HttpRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "type": "string"
+        },
+        "get": {
+          "type": "string"
+        },
+        "put": {
+          "type": "string"
+        },
+        "post": {
+          "type": "string"
+        },
+        "delete": {
+          "type": "string"
+        },
+        "patch": {
+          "type": "string"
+        },
+        "custom": {
+          "$ref": "#/definitions/CustomHttpPattern"
+        },
+        "body": {
+          "type": "string"
+        },
+        "additional_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HttpRule"
+          }
+        }
+      }
+    },
+    "CustomHttpPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateRoleRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "role_type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "description": "UNKNOWN=0, CUSTOMER=1, EMPLOYEE=2, PARTNER=3, AUDIENCE_PROVIDER=4, RETAILER=5, DEVELOPER=6, VENDOR=7, CONTRACTOR=8, SPOUSE=9, CHILD=10, COMPETITOR=11, PROSPECT=12, AFFILIATE=13, INTERNAL_ORGANIZATION=14, PARENT=15, EMPLOYER=16, FACEBOOK_MESSENGER_USER=17"
+        },
+        "date_from": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "date_to": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "role_data": {
+          "$ref": "#/definitions/RoleData"
+        }
+      }
+    },
+    "CreateRoleResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3, ALREADY_EXISTS=4"
+        },
+        "role_id": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateRoleAndPrivateCredentialRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_role_request": {
+          "$ref": "#/definitions/CreateRoleRequest"
+        },
+        "create_private_credentials_request": {
+          "$ref": "#/definitions/CreatePrivateCredentialsRequest"
+        }
+      }
+    },
+    "CreateRoleAndPrivateCredentialResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_NOT_EXISTS=3, ROLE_ALREADY_EXISTS=4, CREDENTIAL_ALREADY_EXISTS=5"
+        },
+        "create_role_response": {
+          "$ref": "#/definitions/CreateRoleResponse"
+        },
+        "create_credentials_response": {
+          "$ref": "#/definitions/CreateCredentialsResponse"
+        }
+      }
+    },
+    "Location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "span": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "leading_comments": {
+          "type": "string"
+        },
+        "trailing_comments": {
+          "type": "string"
+        },
+        "leading_detached_comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   },
@@ -1937,6 +2173,36 @@
         ]
       }
     },
+    "/UpdatePartyStatus": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdatePartyStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/UpdatePartyStatusResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/DeleteParty": {
       "post": {
         "tags": [
@@ -1997,7 +2263,7 @@
         ]
       }
     },
-    "/CreateAnonymousParty": {
+    "/GeneratePersonEmailValidationLinks": {
       "post": {
         "tags": [
           "IDENTITY"
@@ -2008,7 +2274,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CreateAnonymousPartyRequest"
+              "$ref": "#/definitions/GeneratePersonEmailValidationLinksRequest"
             }
           }
         ],
@@ -2016,7 +2282,37 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CreateAnonymousPartyResponse"
+              "$ref": "#/definitions/GeneratePersonEmailValidationLinksResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/VerifyPersonEmail": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyPersonEmailRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/VerifyPersonEmailResponse"
             }
           }
         },
@@ -2047,6 +2343,36 @@
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/CreateRoleResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/CreateRoleAndPrivateCredential": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateRoleAndPrivateCredentialRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CreateRoleAndPrivateCredentialResponse"
             }
           }
         },
@@ -2188,7 +2514,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/DeleteCredentialsRequest"
+              "$ref": "#/definitions/DeletePublicCredentialsRequest"
             }
           }
         ],
@@ -2197,6 +2523,66 @@
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/DeleteCredentialsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/GeneratePublicCredentialsValidationLinks": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateCredentialsValidationLinksRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GenerateCredentialsValidationLinksResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/VerifyPublicCredentials": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyCredentialsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/VerifyCredentialsResponse"
             }
           }
         },
@@ -2308,7 +2694,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/DeleteCredentialsRequest"
+              "$ref": "#/definitions/DeletePrivateCredentialsRequest"
             }
           }
         ],
@@ -2317,6 +2703,66 @@
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/DeleteCredentialsResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/GeneratePrivateCredentialsValidationLinks": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateCredentialsValidationLinksRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GenerateCredentialsValidationLinksResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/VerifyPrivateCredentials": {
+      "post": {
+        "tags": [
+          "IDENTITY"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyCredentialsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/VerifyCredentialsResponse"
             }
           }
         },

@@ -1,0 +1,468 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "WRS Payment Service",
+    "version": "1.0",
+    "description": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:10 PDT 2017",
+    "license": {
+      "name": "Apache 2 License",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "Westfield Support",
+      "url": "http://www.westfieldstatus.com",
+      "email": "help@westfieldsupport.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "PAYMENT"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "description": "A Westfield API-key.",
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "query"
+    }
+  },
+  "x-service-access": [
+    ""
+  ],
+  "definitions": {
+    "EnrollPartyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "EnrollPartyResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_DOES_NOT_EXIST=3, CUSTOMER_ALREADY_EXISTS=4"
+        }
+      }
+    },
+    "MakePaymentRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_method_id": {
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/definitions/Amount"
+        },
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "MakePaymentResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PAYMENT_METHOD_INVALID=3"
+        },
+        "transaction_id": {
+          "type": "string"
+        }
+      }
+    },
+    "SavePaymentMethodRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nonce": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "SavePaymentMethodResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PAYMENT_METHOD_NOT_FOUND=3"
+        },
+        "payment_method_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeletePaymentMethodRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_method_id": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeletePaymentMethodResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PAYMENT_METHOD_NOT_FOUND=3"
+        }
+      }
+    },
+    "GetPaymentMethodsForPartyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "GetPaymentMethodsForPartyResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_DOES_NOT_EXIST=3, CUSTOMER_DOES_NOT_EXIST=4"
+        },
+        "card": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          }
+        }
+      }
+    },
+    "GenerateBraintreeTokenRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "GenerateBraintreeTokenResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2, PARTY_DOES_NOT_EXIST=3"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "Amount": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "exponent": {},
+        "currency": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1
+          ],
+          "description": "UNKNOWN=0, USD=1"
+        }
+      }
+    },
+    "PaymentMethod": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_method_id": {
+          "type": "string"
+        },
+        "is_default": {},
+        "image_url": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "Card": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_method": {
+          "$ref": "#/definitions/PaymentMethod"
+        },
+        "last4": {
+          "type": "string"
+        },
+        "expiration_month": {
+          "type": "string"
+        },
+        "expiration_year": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/EnrollParty": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EnrollPartyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EnrollPartyResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/MakePayment": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MakePaymentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/MakePaymentResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/SavePaymentMethod": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SavePaymentMethodRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SavePaymentMethodResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/DeletePaymentMethod": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeletePaymentMethodRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/DeletePaymentMethodResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/GetPaymentMethodsForParty": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetPaymentMethodsForPartyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetPaymentMethodsForPartyResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/GenerateBraintreeToken": {
+      "post": {
+        "tags": [
+          "PAYMENT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateBraintreeTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GenerateBraintreeTokenResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
+}

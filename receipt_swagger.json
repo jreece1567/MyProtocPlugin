@@ -1,0 +1,272 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "WRS Receipt Service",
+    "version": "1.0",
+    "description": "",
+    "x-last-modified-at": "Tue Jun 20 14:18:10 PDT 2017",
+    "license": {
+      "name": "Apache 2 License",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "Westfield Support",
+      "url": "http://www.westfieldstatus.com",
+      "email": "help@westfieldsupport.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "RECEIPT"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "description": "A Westfield API-key.",
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "query"
+    }
+  },
+  "x-service-access": [
+    ""
+  ],
+  "definitions": {
+    "CreateReceiptRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt": {},
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateReceiptResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        },
+        "receipt_id": {
+          "type": "string"
+        }
+      }
+    },
+    "UpdateReceiptRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt_id": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "UpdateReceiptResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        }
+      }
+    },
+    "CategoryRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ],
+            "description": "UNKNOWN=0, SHOPPING=1, FOOD_AND_DINING=2, TRANSPORTATION=3, ENTERTAINMENT=4"
+          }
+        }
+      }
+    },
+    "CategoryResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "description": "UNKNOWN=0, SUCCESS=1, ERROR=2"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/CreateReceipt": {
+      "post": {
+        "tags": [
+          "RECEIPT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateReceiptRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CreateReceiptResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/UpdateReceipt": {
+      "post": {
+        "tags": [
+          "RECEIPT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateReceiptRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/UpdateReceiptResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/AddCategoryToReceipt": {
+      "post": {
+        "tags": [
+          "RECEIPT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CategoryResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/RemoveCategoryFromReceipt": {
+      "post": {
+        "tags": [
+          "RECEIPT"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CategoryResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
+}
